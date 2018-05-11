@@ -1,5 +1,7 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var multer = require('multer');
+var upload = multer({ dest: 'uploads/' }); //dest(목적지) : 업로드한 파일을 저장할 디렉토리명
 var fs = require('fs'); //파일 시스템을 제어할 수 있는 기본 모듈을 가져옴
 var app = express();
 app.set('views', './views_file');
@@ -7,7 +9,17 @@ app.set('view engine', 'pug');
 app.locals.pretty = true;
 //post 방식으로 들어온 데이터 사용할 때 필요한 모듈
 app.use(bodyParser.urlencoded({ extended : false }));
-//routing
+
+//router
+//file upload
+app.get('/upload', function(req, res){
+  res.render('upload');
+});
+app.post('/upload', upload.single('userfile'), function(req, res){
+  console.log(req.file);
+  res.send('Uploaded : ' + req.file.filename);
+});
+
 app.get('/topic/new', function(req, res){
   fs.readdir('data', function(err, files){
     //err처리
@@ -19,6 +31,7 @@ app.get('/topic/new', function(req, res){
   });
 });
 
+//app application(write-save)
 app.get(['/topic', '/topic/:id'], function(req, res) {
   // 중복으로 사용되는 코드
   fs.readdir('data', function(err, files){
@@ -43,25 +56,6 @@ app.get(['/topic', '/topic/:id'], function(req, res) {
     }
   });
 });
-
-/*
-app.get('/topic/:id', function(req, res) {
-  var id = req.params.id;
-  fs.readdir('data', function(err, files){
-    if(err) {
-      console.log(err);
-      res.statux(500).send('Internal Server Error');
-    }
-    fs.readFile('data/'+ id, 'utf8', function(err, data){
-      if(err) {
-        console.log(err);
-        res.statux(500).send('Internal Server Error');
-      }
-      res.render('view', {topics:files, title:id, description:data});
-    });
-  });
-});
-*/
 
 //기능 : 사용자가 전송한 데이터를 서버에서 받아서
 //      데이터의 제목을 파일명, 본문을 파일의 내용으로 해서 저장
