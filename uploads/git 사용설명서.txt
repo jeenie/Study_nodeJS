@@ -1,0 +1,98 @@
+git
+(ㅈㄴ 어려운데 왜써??? -- 현실이 더 복잡하대...)
+
+git status : git에서 버전관리 하는 중인지 물어봄
+git add : git한테 관리 하라고 명령
+
+git config --global user.name jenie
+git config --global user.email gno0929@gmail.com
+
+git commit
+메모 (버전이름)
+
+git log ->버전 목록 보여줌
+
+내용 수정 후
+
+git status 하면 수정한 파일이 빨간색으로 (git이 수정된 파일은 관리하지않는 다는 뜻)
+
+그 빨간색의 파일을 다시
+git add [파일명] 해줘야함.(헷갈리는 부분)
+
+git commit
+메모 (버전이름)
+
+git log ->버전 목록 하나 더 추가된것을 확인
+
+왜 git add를 하고 commit을 하는가????!!!!
+commit하나는 하나의 수정을 담는 것이 좋음.
+git add는 파일을 선택해서 저장소에 저장 가능
+add한 파일 -> commit 대기 상태 = 'stage area'
+add하지 않은 파일 -> commit 대기 상태 x
+git commit -> commit대기상태에 놓인 파일만 commit한다
+commit한 파일들은 'repository'에 저장
+
+git log -> commit 역사
+-p 옵션 : 각 commit사이의 차이를 보여준다.
+--reverse : log를 거꾸로 출력하기
+	    첫 커밋을 보고 싶다면 사용할 옵션 (커밋 오름차순)
+
+git diff '버전 id'..'버전 id2 ->버전 간의 차이점을 비교
+
+git diff : add하기 전과 add한 후의 파일 내용을 비교, 즉 commit하기 전에 어떤 작업을 했는지 마지막으로 리뷰할 수 있다.
+
+<<과거 버전으로 되돌아가기>>
+commit 취소
+1. reset 
+git reset --hard "버전 id" //버전 id 이후의 commit내용 삭제 -> 삭제된거처럼 보이지만 사실 삭제된 기록 남음
+
+2. revert : 취소하면서 새로운 버전을 동시에 만듬
+git revert "버전 id"
+
+git commit -am "11" 
+-> 따로 add하지 않고 변경된 내용을 자동 commit함, commit시 같이 쓸 메시지도 한번에 작성
+
+git init --bare remote //remote라는 이름의 저장소, bare를 붙였기 때문에 저장소의 기능만 가지고 있음, 작업 x
+
+git remote add origin (원격 저장소 주소) //origin : 매번 주소 치기가 귀찮기때문에 별명같은걸로 생각
+git remote remove origin //원격 저장소 제거
+git push //저장소에 데이터 올림
+
+<<clone : 복제하다>>
+git clone (복제할 내용이 있는 저장소의 주소) 복제할 폴더 이름
+
+어떠한 버전의 소스코드를 보고싶다면
+그 버전 id로 checkout 실행
+git checkout 커밋 id -> branch 변함
+git log 하면 그 커밋만 남게 됨
+그 버전의 내부를 dir 통해 확인하면 분석할 정도의 디렉토리들이 있음
+
+<<원격저장소 Gitnub>>
+1. 원격저장소를 생성하고 그것을 복제해서 로컬 저장소를 생성해서 그 로컬 저장소에서 작업하는 경우
+2. 로컬 저장소에서 작업한 내용을 원격 저장소로 올리는 경우 <<
+3. 다른 사용자의 저장소 clone해서 내 원격 저장소로 올리는 경우 - import clone (단순 상대방의 저장소 주소 복사)
+
+git remote add origin https://github.com/jeenie/start.git
+=> 현재 로컬저장소에 원격저장소를 연결함, origin은 주소의 별명
+
+git push -u origin master
+=> 로컬저장소 입장에서 생각해보면 로컬저장소 안의 내용을 원격저장소로 push 하는것임!
+   -u : 로컬저장소의 branch와 원격저장소의 master branch를 연결시킨다. 한번 설정하면 push할때마다 따로 지정안해도 됨.
+   master : branch 이름
+
+git clone https://github.com/jeenie/start.git .
+=> . : 현재 디렉토리를 의미
+
+git commit --amend : (원격저장소로 push하기전)commit message 변경 가능
+
+git pull
+=> (로컬저장소 입장에서) 원격저장소에서 데이터를 가져오는것으로 볼수 있음
+
+git은 백업가능, 소스와 버전을 모두 원격저장소에 올리기때문에 데이터를 물론 버전관리까지 가능!
+
+<<SSH : Secure Shell>>
+로그인 없이 원격저장소 이용하기
+HTTP와 다른 통신 방식
+
+id_rsa -> private key : 비밀 정보(비밀번호)가 저장
+id_rsa.pub -> public key : 공개된 정보 저장

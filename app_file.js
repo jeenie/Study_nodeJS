@@ -1,7 +1,15 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var multer = require('multer');
-var upload = multer({ dest: 'uploads/' }); //dest(목적지) : 업로드한 파일을 저장할 디렉토리명
+var _storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, file.originalname);
+  }
+});
+var upload = multer({ storage: _storage }); //dest(목적지) : 업로드한 파일을 저장할 디렉토리명
 var fs = require('fs'); //파일 시스템을 제어할 수 있는 기본 모듈을 가져옴
 var app = express();
 app.set('views', './views_file');
@@ -9,6 +17,8 @@ app.set('view engine', 'pug');
 app.locals.pretty = true;
 //post 방식으로 들어온 데이터 사용할 때 필요한 모듈
 app.use(bodyParser.urlencoded({ extended : false }));
+//정적인 파일
+app.use('/user', express.static('uploads'));
 
 //router
 //file upload
