@@ -9,10 +9,19 @@ var _storage = multer.diskStorage({
     cb(null, file.originalname);
   }
 });
-var upload = multer({ storage: _storage }); //dest(목적지) : 업로드한 파일을 저장할 디렉토리명
-var fs = require('fs'); //파일 시스템을 제어할 수 있는 기본 모듈을 가져옴
+var upload = multer({ storage: _storage });
+var fs = require('fs');
+var mysql = require('mysql');
+var conn = mysql.createConnection({
+  host : 'localhost',
+  user : 'root',
+  password : 'wldus1818',
+  database : 'o2'
+});
+
+conn.connect();
 var app = express();
-app.set('views', './views_file');
+app.set('views', './views_mysql');
 app.set('view engine', 'pug');
 app.locals.pretty = true;
 //post 방식으로 들어온 데이터 사용할 때 필요한 모듈
@@ -43,28 +52,27 @@ app.get('/topic/new', function(req, res){
 
 //app application(write-save)
 app.get(['/topic', '/topic/:id'], function(req, res) {
-  // 중복으로 사용되는 코드
-  fs.readdir('data', function(err, files){
-    //err처리
-    if(err) {
-      console.log(err);
-      res.statux(500).send('Internal Server Error');
-    }
+  //Implement a list of posts
+  var sql = 'SELECT id, title FROM topic';
+  conn.query(sql, function(err, topics, fields){
     var id = req.params.id;
-    if(id){
-      //id값이 있을 때
-      fs.readFile('data/'+ id, 'utf8', function(err, data){
+    //Implment a detailed contents
+    if(id) {
+      var sql = 'SELECT * FROM topic WHERE id = ?';
+      conn.query(sql, [id], function(err, topic, fields) {
         if(err) {
           console.log(err);
           res.statux(500).send('Internal Server Error');
+        } else {
+          res.render('view', {topics : topics, topic : topic[0]});
         }
-        res.render('view', {topics:files, title:id, description:data});
       });
     } else {
-      //id값이 없을때
-      res.render('view', { topics:files, title:'Welcome', description:'Hello, JavaScript for server.' });
+      res.render('view', {topics:topics});
     }
+
   });
+
 });
 
 //기능 : 사용자가 전송한 데이터를 서버에서 받아서
