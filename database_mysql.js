@@ -2,8 +2,8 @@ var mysql = require('mysql');
 //이렇게 깃에 올리거나 공유하면 절대 안됨, 중요한 정보를 노출(secret 대체)
 var conn = mysql.createConnection({
   host : 'localhost',
-  user : 'root',
-  password : 'wldus1818',
+  user : 'secret',
+  password : 'secret',
   database : 'o2'
 });
 
